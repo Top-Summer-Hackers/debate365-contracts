@@ -22,4 +22,15 @@ If a user bets again 100 usdc a maximum betting size of 200 usdc on odd 2, our a
 in the pool. Since the collateral is only subject to staking by bettors, the max amount bet will shift and be less than the previous one. 
 
 
+## Flow 
+
+1. Collateral is deposited into a Game A to unlock the Game 
+2. Off-chain ddds are retrieved with Chainlink and added to the on-chain algorithm. 
+3. User A bets amout < maxAmount on the 1st odd fetched.
+4. Algorithm runs 
+5. Keepers trigger the keeper contract to rebalance the max amount to bet. 
+6. The price feed is pulled from the oracle to inform rebalancing calculations.
+7. The library calculates the rebalance
+
+
 
