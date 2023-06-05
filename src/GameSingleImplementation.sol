@@ -19,6 +19,7 @@ contract GameSingleImplementation is IGameSingle {
     error IsFinished(bool);
     error OnlyOwner();
     error NotEnoughToWithdraw();
+    error ClaimWindow(bool);
 
     /**
      * @dev CONSTANTS
@@ -26,6 +27,7 @@ contract GameSingleImplementation is IGameSingle {
     uint256 constant DECIMALS = 10 ** 18;
     uint256 constant FEE = 50; // 0.5 % bps = 10000
     uint256 constant THRESHOLD_REMAINING = 1000;
+    uint256 constant CLAIM_WINDOW_TIME = 3 days;
     /**
      * @dev DYNAMIC
      */
@@ -47,6 +49,7 @@ contract GameSingleImplementation is IGameSingle {
     bool public isFinished;
 
     Choice public result;
+    uint256 public claimWindowDeadline;
     address public owner;
 
     function updateOdds(uint256[3] calldata _odds) external onlyOwner {
@@ -59,6 +62,7 @@ contract GameSingleImplementation is IGameSingle {
         _checkIsFinished(false);
         result = _result;
         isFinished = true;
+        claimWindowDeadline = block.timestamp + CLAIM_WINDOW_TIME;
     }
 
     function init(uint256[3] calldata _odds, address _tokenAddr) external {
@@ -124,7 +128,9 @@ contract GameSingleImplementation is IGameSingle {
      * @dev allows stakers and players to claim with their earnings
      */
     function claim() external returns (uint256 claimable) {
-        _checkIsFinished(true);
+        if (!isClaimWindow()) {
+            revert ClaimWindow(false);
+        }
         uint256 remainingAmount = reserves - pendingBalancePerOdd[result];
         uint256 pendingStake = (remainingAmount * stakersWeight[msg.sender]) /
             compoundedWeight;
@@ -151,16 +157,16 @@ contract GameSingleImplementation is IGameSingle {
      * @dev Recovers amounts sent by mistake
      */
     function withdraw() external {
-        uint256 balance = IERC20(tokenAddr).balanceOf(address(this));
-        uint256 outstandingBalance = balance - (reserves - withdrawnAmount);
-        if (outstandingBalance == 0) {
-            revert NotEnoughToWithdraw();
+        _checkIsFinished(true);
+        if (isClaimWindow()) {
+            revert ClaimWindow(true);
         }
-        IERC20(tokenAddr).transfer(owner, outstandingBalance);
+        uint256 balance = IERC20(tokenAddr).balanceOf(address(this));
+        IERC20(tokenAddr).transfer(owner, balance);
     }
 
-    function _checkIsFinished(bool _finished) internal view {
-        if (!(isFinished == _finished)) {
+    function _checkIsFinished(bool _expected) internal view {
+        if (!(isFinished == _expected)) {
             revert IsFinished(isFinished);
         }
     }
@@ -171,5 +177,9 @@ contract GameSingleImplementation is IGameSingle {
 
     function getStakerWeight(address _user) external view returns (uint256) {
         return stakersWeight[_user];
+    }
+
+    function isClaimWindow() public view returns (bool) {
+        return isFinished && block.timestamp < claimWindowDeadline;
     }
 }
