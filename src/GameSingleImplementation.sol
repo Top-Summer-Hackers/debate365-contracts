@@ -1,6 +1,7 @@
 pragma solidity ^0.8.19;
 
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/IGameSingleImplementation.sol";
 
 // TODO :
 // Checks for arbritage in play , pass ODD to play
@@ -12,18 +13,13 @@ import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
  * @notice A contract that allows betting on 3 choices
  * @dev Owner is always debet365 protocol
  */
-contract GameSingleImplementation {
-    error Initilized(bool);
+contract GameSingleImplementation is IGameSingle {
+    error Initialized(bool);
     error MaxStakeReached(uint256);
     error IsFinished(bool);
     error OnlyOwner();
     error NotEnoughToWithdraw();
 
-    enum Choice {
-        WIN,
-        DRAW,
-        LOSS
-    }
     /**
      * @dev CONSTANTS
      */
@@ -54,6 +50,7 @@ contract GameSingleImplementation {
     address public owner;
 
     function updateOdds(uint256[3] calldata _odds) external onlyOwner {
+        if (!isInitialized) revert Initialized(false);
         _checkIsFinished(false);
         odds = _odds;
     }
@@ -65,7 +62,7 @@ contract GameSingleImplementation {
     }
 
     function init(uint256[3] calldata _odds, address _tokenAddr) external {
-        if (isInitialized) revert Initilized(true);
+        if (isInitialized) revert Initialized(true);
         odds = _odds;
         tokenAddr = _tokenAddr;
         owner = msg.sender;
@@ -73,7 +70,7 @@ contract GameSingleImplementation {
     }
 
     modifier whenInitilized() {
-        if (!isInitialized) revert Initilized(false);
+        if (!isInitialized) revert Initialized(false);
         _;
     }
 
@@ -112,7 +109,12 @@ contract GameSingleImplementation {
         _checkIsFinished(false);
         IERC20(tokenAddr).transferFrom(msg.sender, address(this), _amount);
         _amount -= (_amount * FEE) / 10000;
-        uint256 weight = (_amount * DECIMALS) / reserves;
+        uint256 weight;
+        if (reserves == 0) {
+            weight = 1 * DECIMALS;
+        } else {
+            weight = (_amount * compoundedWeight) / reserves;
+        }
         reserves += _amount;
         stakersWeight[msg.sender] += weight;
         compoundedWeight += weight;
@@ -159,7 +161,15 @@ contract GameSingleImplementation {
 
     function _checkIsFinished(bool _finished) internal view {
         if (!(isFinished == _finished)) {
-            revert IsFinished(_finished);
+            revert IsFinished(isFinished);
         }
+    }
+
+    function getOdds() external view returns (uint256[3] memory) {
+        return odds;
+    }
+
+    function getStakerWeight(address _user) external view returns (uint256) {
+        return stakersWeight[_user];
     }
 }
