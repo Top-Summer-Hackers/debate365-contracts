@@ -22,14 +22,14 @@ contract GameSingleImplementation is IGameSingle {
     error ClaimWindow(bool);
 
     /**
-     * @dev CONSTANTS
+     * @dev CONSTANT VARS
      */
     uint256 constant DECIMALS = 10 ** 18;
     uint256 constant FEE = 50; // 0.5 % bps = 10000
     uint256 constant THRESHOLD_REMAINING = 1000;
     uint256 constant CLAIM_WINDOW_TIME = 3 days;
     /**
-     * @dev DYNAMIC
+     * @dev DYNAMIC VARs
      */
     mapping(address => mapping(Choice => uint256))
         public pendingBalancesPerOddPerUser;
@@ -41,7 +41,7 @@ contract GameSingleImplementation is IGameSingle {
     uint256 public withdrawnAmount;
 
     /**
-     * @dev OTHER VARIABLES
+     * @dev IMPORTANT VARIABLES
      */
     uint256 public reserves;
     address public tokenAddr;
@@ -51,27 +51,6 @@ contract GameSingleImplementation is IGameSingle {
     Choice public result;
     uint256 public claimWindowDeadline;
     address public owner;
-
-    function updateOdds(uint256[3] calldata _odds) external onlyOwner {
-        if (!isInitialized) revert Initialized(false);
-        _checkIsFinished(false);
-        odds = _odds;
-    }
-
-    function endGame(Choice _result) external onlyOwner {
-        _checkIsFinished(false);
-        result = _result;
-        isFinished = true;
-        claimWindowDeadline = block.timestamp + CLAIM_WINDOW_TIME;
-    }
-
-    function init(uint256[3] calldata _odds, address _tokenAddr) external {
-        if (isInitialized) revert Initialized(true);
-        odds = _odds;
-        tokenAddr = _tokenAddr;
-        owner = msg.sender;
-        isInitialized = true;
-    }
 
     modifier whenInitilized() {
         if (!isInitialized) revert Initialized(false);
@@ -85,13 +64,34 @@ contract GameSingleImplementation is IGameSingle {
         _;
     }
 
+    function updateOdds(uint256[3] calldata _odds) external onlyOwner {
+        if (!isInitialized) revert Initialized(false);
+        if (isFinished) revert IsFinished(true);
+        odds = _odds;
+    }
+
+    function endGame(Choice _result) external onlyOwner {
+        if (isFinished) revert IsFinished(true);
+        result = _result;
+        isFinished = true;
+        claimWindowDeadline = block.timestamp + CLAIM_WINDOW_TIME;
+    }
+
+    function init(uint256[3] calldata _odds, address _tokenAddr) external {
+        if (isInitialized) revert Initialized(true);
+        odds = _odds;
+        tokenAddr = _tokenAddr;
+        owner = msg.sender;
+        isInitialized = true;
+    }
+
     /**
      * @notice Plays for an odd
      * @param choice the result of the game
      * @param _amount the amount to play for
      */
     function play(Choice choice, uint256 _amount) external whenInitilized {
-        _checkIsFinished(false);
+        if (isFinished) revert IsFinished(true);
         IERC20(tokenAddr).transferFrom(msg.sender, address(this), _amount);
         uint256 maxStake = getMaxStake(choice);
         if (maxStake < _amount) {
@@ -110,7 +110,7 @@ contract GameSingleImplementation is IGameSingle {
      * @dev takes a fee on everydeposit
      */
     function deposit(uint256 _amount) external {
-        _checkIsFinished(false);
+        if (isFinished) revert IsFinished(true);
         IERC20(tokenAddr).transferFrom(msg.sender, address(this), _amount);
         _amount -= (_amount * FEE) / 10000;
         uint256 weight;
@@ -157,18 +157,14 @@ contract GameSingleImplementation is IGameSingle {
      * @dev Recovers amounts sent by mistake
      */
     function withdraw() external {
-        _checkIsFinished(true);
+        if (!isFinished) {
+            revert IsFinished(false);
+        }
         if (isClaimWindow()) {
             revert ClaimWindow(true);
         }
         uint256 balance = IERC20(tokenAddr).balanceOf(address(this));
         IERC20(tokenAddr).transfer(owner, balance);
-    }
-
-    function _checkIsFinished(bool _expected) internal view {
-        if (!(isFinished == _expected)) {
-            revert IsFinished(isFinished);
-        }
     }
 
     function getOdds() external view returns (uint256[3] memory) {
@@ -181,5 +177,18 @@ contract GameSingleImplementation is IGameSingle {
 
     function isClaimWindow() public view returns (bool) {
         return isFinished && block.timestamp < claimWindowDeadline;
+    }
+
+    function getPendingBalanceOfUser(
+        Choice _choice,
+        address _user
+    ) external view returns (uint256) {
+        return pendingBalancesPerOddPerUser[_user][_choice];
+    }
+
+    function getPendingBalanceOfOdd(
+        Choice _choice
+    ) external view returns (uint256) {
+        return pendingBalancePerOdd[_choice];
     }
 }
