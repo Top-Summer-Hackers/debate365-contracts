@@ -29,6 +29,7 @@ contract GameSingleImplementation {
      */
     uint256 constant DECIMALS = 10 ** 18;
     uint256 constant FEE = 50; // 0.5 % bps = 10000
+    uint256 constant THRESHOLD_REMAINING = 1000;
     /**
      * @dev DYNAMIC
      */
@@ -135,6 +136,7 @@ contract GameSingleImplementation {
         Choice _choice
     ) public view returns (uint256 maxStake) {
         uint256 remainingAmount = reserves - pendingBalancePerOdd[_choice];
+        remainingAmount -= (remainingAmount * THRESHOLD_REMAINING) / 10000;
         maxStake = (remainingAmount * DECIMALS) / odds[uint256(_choice)];
     }
 
