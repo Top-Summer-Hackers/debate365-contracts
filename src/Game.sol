@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "./libraries/Bet.sol";
+
 contract Game {
+
+    using Bet for Bet.Side;
 
     uint256 public maxAmountBet; 
     uint256 public maxBet;
     address public bookie;
 
+
     mapping(uint => uint) lockedPerGame;
     mapping(uint => uint) totalLiquidityPerGame;  // mapping between gameId and total ETH in the poolGame 
     mapping(uint => uint) totalPayOut;
-    // mapping(uint => Bet ) betPerGame; // mapping between gameId and a specific bet 
-
+    mapping(uint => uint) maxPerGame; // mapping between gameId and max amount per game
 
     enum Side {
         HOME,
@@ -23,8 +27,8 @@ contract Game {
     mapping(address => Side) betOfUser ; 
 
     //mapping between odds and sides
-    mapping(uint => Side) oddsForSide;
-
+    mapping(uint => Side) public oddsForSide;
+    mapping(Side => uint) public  numberForSide; 
 
     Side public side;
 
@@ -35,32 +39,45 @@ contract Game {
         string teamB;
     }
 
+    event changedMaxBet(uint256 maxAmountBet);
+
     constructor(
-        address _bookie
+        address _bookie,
+        uint256 _gameId,
+        uint256 _lockAmount
     ){
         bookie = _bookie;
+        lockedPerGame[_gameId] = _lockAmount;
+
     }
 
     function initOdd(uint256 _homeOdd, uint256 _drawOdd, uint256 _awayOdd ) public onlyBookie {
-
+        
         oddsForSide[_homeOdd] = Side.HOME;
         oddsForSide[_drawOdd] = Side.DRAW;
         oddsForSide[_awayOdd] = Side.AWAY;
     }
 
+    function getSide() public view returns (Side){
+        return side; 
+    }
+
+    function setSide(Side _newSide) public{
+        side = _newSide;
+    }
+
     function chooseSide(uint _gameId, uint _odd) public  payable {
-
-
-        if (betOfUser[msg.sender] == Side.HOME) {
-            _rebalanceSizeForLay(_gameId);
-            require(isMaxBet() , "Maximum Bet Limit Exceeded");   
-        } else if (betOfUser[msg.sender] == Side.DRAW) {
-            rebalanceSizeForDraw(_odd);
-            require(isMaxBet() , "Maximum Bet Limit Exceeded"); 
-        } else if (betOfUser[msg.sender] == Side.AWAY) {
-            rebalanceSizeForBack(_odd);
-            require(isMaxBet() , "Maximum Bet Limit Exceeded");
-        }
+        _rebalanceSizeForLay(_gameId);
+        // if (betOfUser[msg.sender] == Side.HOME) {
+        //     _rebalanceSizeForLay(_gameId);
+        //     require(isMaxBet() , "Maximum Bet Limit Exceeded");   
+        // } else if (betOfUser[msg.sender] == Side.DRAW) {
+        //     rebalanceSizeForDraw(_odd);
+        //     require(isMaxBet() , "Maximum Bet Limit Exceeded"); 
+        // } else if (betOfUser[msg.sender] == Side.AWAY) {
+        //     rebalanceSizeForBack(_odd);
+        //     require(isMaxBet() , "Maximum Bet Limit Exceeded");
+        // }
         
         totalLiquidityPerGame[_gameId] += msg.value;
         totalPayOut[_gameId] += msg.value * _odd;
@@ -74,6 +91,7 @@ contract Game {
             maxAmountBet = maxAmountBet;
         } else { 
             maxAmountBet = maxAmountBet  - ((maxAmountBet * 20 ) / 100) ;  // Decrease the maxAmountBet by 20%
+            emit changedMaxBet(maxAmountBet);
        }
 
     }
