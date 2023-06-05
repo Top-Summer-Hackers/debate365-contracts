@@ -40,6 +40,7 @@ contract GameSingleImplementation {
 
     mapping(address => uint256) stakersWeight;
     uint256 public compoundedWeight;
+    uint256 public withdrawnAmount;
 
     /**
      * @dev OTHER VARIABLES
@@ -129,7 +130,11 @@ contract GameSingleImplementation {
         claimable += pendingBalancesPerOddPerUser[msg.sender][result];
         pendingBalancesPerOddPerUser[msg.sender][result] = 0;
         stakersWeight[msg.sender] = 0;
+        if (claimable == 0) {
+            revert NotEnoughToWithdraw();
+        }
         IERC20(tokenAddr).transfer(msg.sender, claimable);
+        withdrawnAmount += claimable;
     }
 
     function getMaxStake(
@@ -145,7 +150,7 @@ contract GameSingleImplementation {
      */
     function withdraw() external {
         uint256 balance = IERC20(tokenAddr).balanceOf(address(this));
-        uint256 outstandingBalance = balance - reserves;
+        uint256 outstandingBalance = balance - (reserves - withdrawnAmount);
         if (outstandingBalance == 0) {
             revert NotEnoughToWithdraw();
         }
