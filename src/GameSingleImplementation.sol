@@ -2,6 +2,7 @@ pragma solidity ^0.8.19;
 
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IGameSingle.sol";
+import "forge-std/console.sol";
 
 // TODO :
 // Checks for arbritage in play , pass ODD to play
@@ -27,6 +28,8 @@ contract GameSingleImplementation is IGameSingle {
     mapping(address => mapping(Choice => uint256))
         public pendingBalancesPerOddPerUser;
     mapping(Choice => uint256) public pendingBalancePerOdd;
+    mapping(Choice => uint256) public reservesPerOdd;
+
     uint256[3] public odds; // with 6 decimals
 
     mapping(address => uint256) stakersWeight;
@@ -96,6 +99,7 @@ contract GameSingleImplementation is IGameSingle {
         pendingBalancesPerOddPerUser[msg.sender][choice] += eventualClaimable;
         pendingBalancePerOdd[choice] += eventualClaimable;
         reserves += _amount;
+        reservesPerOdd[choice] += _amount;
     }
 
     /**
@@ -144,7 +148,25 @@ contract GameSingleImplementation is IGameSingle {
     ) public view returns (uint256 maxStake) {
         uint256 remainingAmount = reserves - pendingBalancePerOdd[_choice];
         remainingAmount -= (remainingAmount * THRESHOLD_REMAINING) / 10000;
+        uint256 maxStakeFromBets = getMaxStakeFromBetRatio();
+        remainingAmount = (remainingAmount + maxStakeFromBets) / 2;
         maxStake = (remainingAmount * DECIMALS) / odds[uint256(_choice)];
+    }
+
+    function getMaxStakeFromBetRatio()
+        internal
+        view
+        returns (uint256 maxAmount)
+    {
+        uint256 allOddReserves = reservesPerOdd[Choice.WIN] +
+            reservesPerOdd[Choice.DRAW] +
+            reservesPerOdd[Choice.LOSS];
+        // bet ratio with 18 decimals
+        uint256 BetRatioInReserves = (allOddReserves * DECIMALS) / reserves;
+        // when at least 1 percent
+        if (BetRatioInReserves > (1000 * DECIMALS) / 10000) {
+            maxAmount = allOddReserves;
+        }
     }
 
     /**
