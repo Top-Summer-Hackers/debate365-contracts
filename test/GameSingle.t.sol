@@ -232,10 +232,10 @@ contract GameSingleImplementationTest is Test, IGameSingle {
         uint256 maxStake = game.getMaxStake(IGameSingle.Choice.LOSS);
 
         require(
-            maxStake > (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 4
+            maxStake > (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 8
         );
         require(
-            maxStake < (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 3
+            maxStake < (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 6
         );
 
         vm.startPrank(user2);
@@ -247,7 +247,7 @@ contract GameSingleImplementationTest is Test, IGameSingle {
         maxStake = game.getMaxStake(IGameSingle.Choice.WIN);
 
         require(
-            maxStake > (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 2
+            maxStake > (reserves * (10000 - THRESHOLD_REMAINING)) / 10000 / 4
         );
         require(maxStake < (reserves * (10000 - THRESHOLD_REMAINING)) / 10000);
     }
@@ -319,9 +319,9 @@ contract GameSingleImplementationTest is Test, IGameSingle {
         uint256 pending = game.reserves() - pendingBalanceOfOdd;
         pending *= (10000 - THRESHOLD_REMAINING);
         pending /= 10000;
+        pending = (pending + maxStake / 2) / 2;
         pending = (pending * DECIMALS) / odds[0];
         require(pending == newMaxStake);
-
         // finish game
         sp = vm.snapshot();
         game.endGame(IGameSingle.Choice.WIN);
