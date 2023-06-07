@@ -1,7 +1,7 @@
 pragma solidity ^0.8.19;
 
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import "./interfaces/IGameSingleImplementation.sol";
+import "./interfaces/IGameSingle.sol";
 
 // TODO :
 // Checks for arbritage in play , pass ODD to play
@@ -14,13 +14,6 @@ import "./interfaces/IGameSingleImplementation.sol";
  * @dev Owner is always debet365 protocol
  */
 contract GameSingleImplementation is IGameSingle {
-    error Initialized(bool);
-    error MaxStakeReached(uint256);
-    error IsFinished(bool);
-    error OnlyOwner();
-    error NotEnoughToWithdraw();
-    error ClaimWindow(bool);
-
     /**
      * @dev CONSTANT VARS
      */
@@ -102,6 +95,7 @@ contract GameSingleImplementation is IGameSingle {
 
         pendingBalancesPerOddPerUser[msg.sender][choice] += eventualClaimable;
         pendingBalancePerOdd[choice] += eventualClaimable;
+        reserves += _amount;
     }
 
     /**

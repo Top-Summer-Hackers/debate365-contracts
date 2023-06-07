@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "./GameProxy.sol";
-import "./interfaces/IGameSingleImplementation.sol";
+import "./interfaces/IGameSingle.sol";
 
 contract Debet365 is Ownable {
     error InvalidImplementation();
@@ -12,8 +12,9 @@ contract Debet365 is Ownable {
         MULTIPLE
     }
 
-    mapping(GameType => address) implementations;
-    mapping(uint256 => address) games;
+    mapping(GameType => address) public implementations;
+    mapping(uint256 => address) public games;
+
     uint256 gameCount = 1;
 
     function withdraw(address _token) external onlyOwner {
@@ -34,7 +35,7 @@ contract Debet365 is Ownable {
         uint256[3] calldata _odds,
         GameType _type,
         address _tokenAddr
-    ) external returns (address) {
+    ) external onlyOwner returns (address) {
         address _implementation = implementations[_type];
         if (_implementation == address(0)) {
             revert InvalidImplementation();
@@ -47,7 +48,7 @@ contract Debet365 is Ownable {
         return address(game);
     }
 
-    function withdrawFromGame(uint256 _gameIdx) external onlyOwner {
-        IGameSingle(games[_gameIdx]).withdraw();
+    function getImplementation(GameType _type) external view returns (address) {
+        return implementations[_type];
     }
 }
