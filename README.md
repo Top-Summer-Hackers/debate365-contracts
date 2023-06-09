@@ -33,4 +33,16 @@ in the pool. Since the collateral is only subject to staking by bettors, the max
 7. The library calculates the rebalance
 
 
+# Smart contracts 
+
+- As a user you can open games with specific odds and token addresses. You can also update the odd on a specific game instance after providing liquidity. 
+
+- Chainlink functions are used in the contract `Debet365FunctionsConsumer.sol` . This contract let the user execute requests and handling callback responses. 
+
+- A player can bet on 3 choices. He can be a a maximum stake allowed based on the remaining reserves and odds. 
+
+
+
+
+
 
