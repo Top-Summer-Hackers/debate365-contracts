@@ -153,6 +153,10 @@ contract GameSingleImplementation is IGameSingle {
         maxStake = (remainingAmount * DECIMALS) / odds[uint256(_choice)];
     }
 
+    /**
+     * @dev returns the max stake based on how much of the reserves
+     * @dev are composed by previous plays ( non liquidity from stakers)
+     */
     function getMaxStakeFromBetRatio()
         internal
         view

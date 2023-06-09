@@ -373,4 +373,6 @@ contract GameSingleImplementationTest is Test, IGameSingle {
     function init(uint256[3] calldata, address) external override {}
 
     function withdraw() external override {}
+
+    function updateOdds(uint256[3] memory) external {}
 }

@@ -3,4 +3,10 @@ src = 'src'
 out = 'out'
 libs = ['lib']
 
+[rpc_endpoints]
+polygonMumbai = "https://capable-still-replica.matic-testnet.discover.quiknode.pro/b6e56b8931cb53eb1c575e1ed22ed871f8270b4e/"
+
+[etherscan]
+polygonMumbai = { key = "${ETHERSCAN_API_KEY}" }
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

@@ -17,4 +17,6 @@ interface IGameSingle {
     function init(uint256[3] calldata, address) external;
 
     function withdraw() external;
+
+    function updateOdds(uint256[3] memory) external;
 }

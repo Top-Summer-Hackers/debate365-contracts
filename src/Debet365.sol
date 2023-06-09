@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
@@ -11,9 +12,9 @@ contract Debet365 is Ownable {
         SINGLE,
         MULTIPLE
     }
-
     mapping(GameType => address) public implementations;
     mapping(uint256 => address) public games;
+    mapping(address => uint256) public gameIds;
 
     uint256 gameCount = 1;
 
@@ -44,8 +45,16 @@ contract Debet365 is Ownable {
         IGameSingle(address(game)).init(_odds, _tokenAddr);
 
         games[gameCount] = address(game);
+        gameIds[address(game)] = gameCount;
 
         return address(game);
+    }
+
+    function _updateOddsOfGame(
+        uint256 _gameId,
+        uint256[3] memory _odds
+    ) internal {
+        IGameSingle(games[_gameId]).updateOdds(_odds);
     }
 
     function getImplementation(GameType _type) external view returns (address) {
