@@ -46,7 +46,7 @@ contract Debet365 is Ownable {
 
         games[gameCount] = address(game);
         gameIds[address(game)] = gameCount;
-
+        gameCount++;
         return address(game);
     }
 
