@@ -33,7 +33,7 @@ in the pool. Since the collateral is only subject to staking by bettors, the max
 7. The library calculates the rebalance
 
 
-# Smart contracts 
+## Smart contracts 
 
 - As a user you can open games with specific odds and token addresses. You can also update the odd on a specific game instance after providing liquidity. 
 
@@ -41,7 +41,9 @@ in the pool. Since the collateral is only subject to staking by bettors, the max
 
 - A player can bet on 3 choices. He can be a a maximum stake allowed based on the remaining reserves and odds. 
 
+## Architecture 
 
+<img width="909" alt="Screenshot 2023-06-10 at 6 50 48 AM" src="https://github.com/Top-Summer-Hackers/debate365-contracts/assets/75360886/175a2cba-c336-459b-baca-7a41a8bfe626">
 
 
 
