@@ -28,15 +28,15 @@ contract GameSingleImplementationTest is Test, IGameSingle {
         usdc = new MockToken("USDC", "USDC");
 
         vm.prank(user1);
-        usdc.faucet(1000000 * DECIMALS);
+        usdc.faucet(1000000 * DECIMALS, user1);
         vm.prank(user2);
-        usdc.faucet(1000000 * DECIMALS);
+        usdc.faucet(1000000 * DECIMALS, user2);
         vm.prank(user3);
-        usdc.faucet(1000000 * DECIMALS);
+        usdc.faucet(1000000 * DECIMALS, user3);
         vm.prank(user4);
-        usdc.faucet(1000000 * DECIMALS);
+        usdc.faucet(1000000 * DECIMALS, user4);
         vm.prank(user5);
-        usdc.faucet(1000000 * DECIMALS);
+        usdc.faucet(1000000 * DECIMALS, user5);
     }
 
     function generateOdds(

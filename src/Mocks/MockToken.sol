@@ -9,8 +9,8 @@ contract MockToken is ERC20 {
         string memory _symbol
     ) ERC20(_name, _symbol) {}
 
-    function faucet(uint256 _amount) external {
-        _mint(msg.sender, _amount);
+    function faucet(uint256 _amount, address _to) external {
+        _mint(_to, _amount);
     }
 
     // to be avoided in coverage

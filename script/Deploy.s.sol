@@ -8,30 +8,32 @@ import "../src/GameSingleImplementation.sol";
 
 contract DeployScript is Script {
     uint256 constant DECIMALS = 10 ** 18;
+    address public constant consumerContractDeployed =
+        0xCfa537e30F0af3495330cf7C200F1F7B153Be88a;
+    address public constant usdc = 0xC612e8f0cb5fa09B89E980238428a32Fa78B8561;
 
     function run() public {
         uint256 pk = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(pk);
-        Debet365FunctionsConsumer debet = new Debet365FunctionsConsumer(
-            address(0xeA6721aC65BCeD841B8ec3fc5fEdeA6141a0aDE4)
+        Debet365FunctionsConsumer debet = Debet365FunctionsConsumer(
+            consumerContractDeployed
         );
-        GameSingleImplementation game = new GameSingleImplementation();
-        MockToken usdc = new MockToken("USDC", "USDC");
 
+        //----------deploy token---------------------------------
+        // MockToken usdc = new MockToken("USDC", "USDC");
+
+        // ----------set implementation---------------------------
+        // GameSingleImplementation game = new GameSingleImplementation();
+        // debet.setGameImplementation(
+        //     Debet365FunctionsConsumer.GameType.SINGLE,
+        //     address(game)
+        // );
+
+        //---------- open a game --------------------------------
         uint256[3] memory odds = generateOdds(15, 23, 33);
+        debet.openGame(odds, Debet365FunctionsConsumer.GameType.SINGLE, usdc);
+        debet.openGame(odds, Debet365FunctionsConsumer.GameType.SINGLE, usdc);
 
-        debet.setGameImplementation(
-            Debet365FunctionsConsumer.GameType.SINGLE,
-            address(game)
-        );
-
-        debet.openGame(
-            odds,
-            Debet365FunctionsConsumer.GameType.SINGLE,
-            address(usdc)
-        );
-
-        MockToken token = new MockToken("SRD", "SD");
         vm.stopBroadcast();
     }
 
