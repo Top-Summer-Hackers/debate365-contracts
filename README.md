@@ -1,8 +1,14 @@
 # deBet365 
 
-deBet365 is a decentralized betting platform focusing on rebalancing liquidity to maintaining it's viability. 
-deBet365 eliminates liquidation risk via staking rebalancing max bet size which shifts the balance 
-of a pool in response to stakers betting on a certain odd. 
+Betting is facing many problems : 
+- Centralization of companies. 
+- Lengthy withdrawal verification processes.
+- Government bans 
+- KYC 
+- 
+
+deBet365 is solving those issues with a cutting-edge decentralized platfom with a new concept of Size Rebalacing which fixes the problem of Liquidity Providers. The Liquidatation risk is eliminated via rebalancing the Max Bet Size which shifts the balance of a pool in response to stakers transactions. 
+
 
 
 ## Proof of ` Size Rebalancing ` 
