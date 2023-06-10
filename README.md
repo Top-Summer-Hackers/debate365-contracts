@@ -57,7 +57,7 @@ The odds are then set via the API locally and send to [CheckOdds script](https:/
 
 ## Chainlink Functions and odds 
 
-We have deployed our custom implementation of [FunctionsConsumer] :(https://mumbai.polygonscan.com/address/0xcfa537e30f0af3495330cf7c200f1f7b153be88a) 
+We have deployed our custom implementation of [FunctionsConsumer](https://mumbai.polygonscan.com/address/0xcfa537e30f0af3495330cf7c200f1f7b153be88a) 
 
 
 - Game 1 : 1.5, 2.3, 3.3
