@@ -3,13 +3,12 @@
 deBet365 is a decentralized betting platform focusing on rebalancing liquidity to maintaining it's viability. 
 deBet365 eliminates liquidation risk via staking rebalancing max bet size which shifts the balance 
 of a pool in response to stakers betting on a certain odd. 
-Our protocol offer both betting back & lay better odds by querying the off-chain odds via Chainlink 
-Functions and updating odds on-chain which avoids odds manipulation by centralized bookmakers. 
 
-## Our Algorithmic rebalancing 
 
-deBet356 algorithm automatically rebalance maximum bet size to prevent under-collateralisation. 
-It also checks that odds stays in a valid range to avoid arbitrage situations by using Chainlink Functions. 
+## Proof of ` Size Rebalancing ` 
+
+This rebalancing algorithm calculates the maximum stake that can be placed on a specific choice in a game. It considers the amount of money available in the reserves, subtracts the pending balances for that choice, and adjusts it based on a threshold value. It also takes into account the ratio of previous bets made on all choices. If the ratio exceeds a certain threshold (at least 1 percent), it allows for a larger maximum stake. This ensures that the available funds are distributed evenly among the different choices, promoting fairness and preventing a single choice from dominating the betting pool. It is like making sure that each option gets a fair share of the available money to maintain a balanced playing field.
+
 
 #### Example :
 
@@ -40,6 +39,28 @@ in the pool. Since the collateral is only subject to staking by bettors, the max
 ## Architecture 
 
 <img width="909" alt="Screenshot 2023-06-10 at 6 50 48 AM" src="https://github.com/Top-Summer-Hackers/debate365-contracts/assets/75360886/175a2cba-c336-459b-baca-7a41a8bfe626">
+
+## Chainlink Functions 
+
+Decentralized betting allow a more trustless user experience. In fact, users can check that the bookmaker have added a specific game with specific odds. This eliminates the control of odds and margin profits by bookies in the centralized betting system. By Adding Chainlink Functions, odds are retrieved on-chain via a server with an API endpoint which is retrieving odds from a provider (bookmaker). By implementing chainlink functions, we make sure to have odds on-chain. 
+
+- The repository using Chainlink Functions with the server can be found here  : https://github.com/Top-Summer-Hackers/functions-365/tree/tutorials. To run it , follow the steps bellow : 
+
+
+- ``` git clone https://github.com/Top-Summer-Hackers/functions-365.git ``` 
+- ``` cd server ```
+- ``` npm run build ```
+- ``` npm start ```
+
+The odds are then set via the API locally and send to [CheckOdds script](https://github.com/Top-Summer-Hackers/debate365-contracts/blob/main/script/CheckOdds.s.sol) where they are recorded on-chain after running on the [debate365-contracts](https://github.com/Top-Summer-Hackers/debate365-contracts) root folder : ``` forge script script/CheckOdds.s.sol --rpc-url polygonMumbai --broadcast ```                                                                                          ⏎
+
+
+
+
+
+
+
+
 
 
 
