@@ -55,6 +55,14 @@ Decentralized betting allow a more trustless user experience. In fact, users can
 The odds are then set via the API locally and send to [CheckOdds script](https://github.com/Top-Summer-Hackers/debate365-contracts/blob/main/script/CheckOdds.s.sol) where they are recorded on-chain after running on the [debate365-contracts](https://github.com/Top-Summer-Hackers/debate365-contracts) root folder : ``` forge script script/CheckOdds.s.sol --rpc-url polygonMumbai --broadcast ```                                                                                          ⏎
 
 
+## Chainlink Functions and odds 
+
+- Game 1 : 1.5, 2.3, 3.3
+- Game 2 : 1.23 6.69 9.09
+- Game 3 : 2.03 3.88 3.0
+- Game 4 : 1.86 3.94 4.45
+- Game 5 : 2.87 2.92 2.53
+
 
 
 
