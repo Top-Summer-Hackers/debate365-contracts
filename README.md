@@ -5,7 +5,7 @@ Betting is facing many problems :
 - Lengthy withdrawal verification processes.
 - Government bans 
 - KYC 
-- 
+- High fees to players 
 
 deBet365 is solving those issues with a cutting-edge decentralized platfom with a new concept of Size Rebalacing which fixes the problem of Liquidity Providers. The Liquidatation risk is eliminated via rebalancing the Max Bet Size which shifts the balance of a pool in response to stakers transactions. 
 
