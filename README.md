@@ -46,6 +46,11 @@ in the pool. Since the collateral is only subject to staking by bettors, the max
 
 <img width="909" alt="Screenshot 2023-06-10 at 6 50 48 AM" src="https://github.com/Top-Summer-Hackers/debate365-contracts/assets/75360886/175a2cba-c336-459b-baca-7a41a8bfe626">
 
+## Chainlink Architecture 
+
+<img width="878" alt="Screenshot 2023-06-11 at 9 22 41 PM" src="https://github.com/Top-Summer-Hackers/debate365-contracts/assets/75360886/c8c8841b-b088-4bd9-98c5-75b63064d3e4">
+
+
 ## Chainlink Functions 
 
 Decentralized betting allow a more trustless user experience. In fact, users can check that the bookmaker have added a specific game with specific odds. This eliminates the control of odds and margin profits by bookies in the centralized betting system. By Adding Chainlink Functions, odds are retrieved on-chain via a server with an API endpoint which is retrieving odds from a provider (bookmaker). By implementing chainlink functions, we make sure to have odds on-chain. 
